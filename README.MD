@@ -16,10 +16,10 @@ This is a workout tracker app that allows users to create an account and track t
 
 - **Track your progress:** Users should be able to see their progress through diagrams.
 
-**Technologies Used**
+## Technologies Used
 
-- Front-end: ReactJS
-- Back-end: NodeJS, ExpressJS, MongoDB
-- User Authentication: JSON Web Tokens (JWT)
+- **Front-end:** ReactJS
+- **Back-end:** NodeJS, ExpressJS, MongoDB
+- **User Authentication:** JSON Web Tokens (JWT)
 
 Link to fronted repository: [https://github.com/ErikOnd/workout_tracker_fe](https://github.com/ErikOnd/workout_tracker_fe)
