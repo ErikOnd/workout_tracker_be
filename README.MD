@@ -1,6 +1,6 @@
 # Workout Tracker
 
-This is a workout tracker app that allows users to create an account and track their workouts. Users can also create an account directly via Google or Apple.
+A workout tracker app that allows users to create and save their own custom workouts, set goals for specific exercises, focus on specific muscle groups, import workouts from other users, like and share workouts, and track their progress through diagrams.
 
 ## Features
 
@@ -12,7 +12,7 @@ This is a workout tracker app that allows users to create an account and track t
 
 - **Import workouts from other users:** Users can search for workouts created by other users and import them into their own workout folder and can customize them as desired. Similar to Spotify, when downloading a playlist.
 
-- **Liking Workouts:** Users are also able to like workouts from other users. When you search for workouts, the ones with the most likes appear at the top of the list.
+- **Liking workouts:** Users are also able to like workouts from other users. When you search for workouts, the ones with the most likes appear at the top of the list.
 
 - **Track your progress:** Users should be able to see their progress through diagrams.
 
