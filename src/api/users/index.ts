@@ -12,12 +12,7 @@ import { RequestHandler, Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
 interface googleRequest extends Request {
-  user?: { _id?: string; status?: "online" | "offline"; accessToken?: string };
-}
-
-interface UserStatus {
-  _id: string;
-  status: string;
+  user?: { _id?: string; accessToken?: string };
 }
 
 const userRouter = express.Router();
@@ -36,7 +31,7 @@ userRouter.get(
   (req: googleRequest, res, next) => {
     try {
       res.redirect(
-        `${process.env.FE_DEV_URL}/home?accessToken=${req.user?.accessToken}`
+        `${process.env.FE_DEV_URL}/profile?accessToken=${req.user?.accessToken}`
       );
     } catch (error) {
       next(error);
@@ -77,6 +72,7 @@ userRouter.post("/login", async (req, res, next) => {
   }
 });
 
+//add middleware to check for admin
 userRouter.get("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const userList = await UserModel.find();
@@ -138,6 +134,19 @@ userRouter.get(
   }
 );
 
+userRouter.delete(
+  "/me",
+  JWTAuthMiddleware,
+  async (req: JwtPayload, res, next) => {
+    try {
+      await UserModel.findOneAndDelete(req.user._id);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 const cloudinaryUploader = multer({
   storage: new CloudinaryStorage({
     cloudinary,
@@ -167,18 +176,5 @@ userRouter.put("/image/:userId", cloudinaryUploader, async (req, res, next) => {
     next(error);
   }
 });
-
-userRouter.delete(
-  "/me",
-  JWTAuthMiddleware,
-  async (req: JwtPayload, res, next) => {
-    try {
-      await UserModel.findOneAndDelete(req.user._id);
-      res.status(204).send();
-    } catch (error) {
-      next(error);
-    }
-  }
-);
 
 export default userRouter;

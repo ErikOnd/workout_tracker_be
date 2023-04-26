@@ -1,7 +1,8 @@
 import express from "express";
 import passport from "passport";
 import cors from "cors";
-//import googleStrategy from "./lib/auth/googleOauth";
+import googleStrategy from "./lib/auth/google.Oauth";
+import userRouter from "./api/users";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import listEndpoints from "express-list-endpoints";
@@ -16,7 +17,7 @@ import {
 
 const server = express();
 const port = process.env.PORT;
-//passport.use("google", googleStrategy);
+passport.use("google", googleStrategy);
 
 // *************************** MIDDLEWARES *************************
 const whitelist = [process.env.FE_DEV_URL as string, process.env.FE_PROD_URL];
@@ -40,7 +41,7 @@ server.use(express.json());
 server.use(passport.initialize());
 
 // *************************** ENDPOINTS ***************************
-//server.use("/users", userRouter);
+server.use("/users", userRouter);
 
 // ************************* ERROR HANDLERS ************************
 server.use(badRequestHandler);

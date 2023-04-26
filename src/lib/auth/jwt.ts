@@ -27,7 +27,7 @@ export const JWTAuthMiddleware: RequestHandler = async (
       const payload = await verifyAccessToken(accessToken);
 
       // 4. If everything is fine we should get back the payload and no errors should be thrown --> next
-      req.user = { _id: payload._id, status: payload.status };
+      req.user = { _id: payload._id };
       next();
 
       // 5. If the token is NOT ok for any reason, or in any case jsonwebtoken will throw any error --> 401

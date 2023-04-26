@@ -2,6 +2,13 @@ import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import { UserDocument, UserModel } from "../../interfaces/userInterface";
 
+const GoalSchema = new Schema({
+  exercise_name: { type: String, required: true },
+  target_weight: { type: Number, required: true },
+  target_date: { type: Date, required: true },
+  reminder_interval: { type: Number, required: true },
+});
+
 const UsersSchema = new Schema(
   {
     username: { type: String, required: true },
@@ -13,6 +20,8 @@ const UsersSchema = new Schema(
         "https://res.cloudinary.com/dyy38u8x7/image/upload/v1682436708/workoutTracker/blank-profile-picture-g64029973a_640_khl6e3.png",
     },
     googleId: { type: String },
+    role: { type: String, default: "user" },
+    goals: { type: [GoalSchema], default: [] },
   },
   { timestamps: true }
 );
