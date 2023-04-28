@@ -31,7 +31,7 @@ userRouter.get(
   (req: googleRequest, res, next) => {
     try {
       res.redirect(
-        `${process.env.FE_DEV_URL}/profile?accessToken=${req.user?.accessToken}`
+        `${process.env.FE_DEV_URL}/login?accessToken=${req.user?.accessToken}`
       );
     } catch (error) {
       next(error);
