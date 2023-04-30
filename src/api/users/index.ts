@@ -84,7 +84,9 @@ userRouter.get("/", JWTAuthMiddleware, async (req, res, next) => {
 
 userRouter.get("/me", JWTAuthMiddleware, async (req: JwtPayload, res, next) => {
   try {
-    const user = await UserModel.findById(req.user?._id);
+    const user = await UserModel.findById(req.user?._id).select(
+      "-createdAt -updatedAt"
+    );
 
     if (user) {
       res.send(user);
@@ -100,6 +102,7 @@ userRouter.get("/me", JWTAuthMiddleware, async (req: JwtPayload, res, next) => {
 
 userRouter.put("/me", JWTAuthMiddleware, async (req: JwtPayload, res, next) => {
   try {
+    console.log(req);
     const updatedUser = await UserModel.findByIdAndUpdate(
       req.user?._id,
       req.body,
