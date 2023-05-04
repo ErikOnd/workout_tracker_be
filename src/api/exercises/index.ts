@@ -6,7 +6,6 @@ import createHttpError from "http-errors";
 
 exerciseRouter.get("/:exercise", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    console.log(req.params.exercise);
     const exercise = await ExerciseModel.findOne({
       exercise: req.params.exercise,
     });

@@ -4,6 +4,7 @@ import cors from "cors";
 import googleStrategy from "./lib/auth/google.Oauth";
 import userRouter from "./api/users";
 import exerciseRouter from "./api/exercises";
+import workoutRouter from "./api/workouts";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import listEndpoints from "express-list-endpoints";
@@ -44,6 +45,7 @@ server.use(passport.initialize());
 // *************************** ENDPOINTS ***************************
 server.use("/users", userRouter);
 server.use("/exercises", exerciseRouter);
+server.use("/workouts", workoutRouter);
 
 // ************************* ERROR HANDLERS ************************
 server.use(badRequestHandler);
