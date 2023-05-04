@@ -35,4 +35,27 @@ workoutRouter.get(
   }
 );
 
+workoutRouter.delete(
+  "/:workoutId",
+  JWTAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      const workoutToDelete = await ExerciseModel.findByIdAndDelete(
+        req.params.workoutId
+      );
+
+      if (!workoutToDelete) {
+        res.send(
+          createHttpError(
+            404,
+            `Workout with id: ${req.params.workoutId} not found`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default workoutRouter;
