@@ -2,8 +2,11 @@ import { Schema, model } from "mongoose";
 
 const ExerciseSchema = new Schema(
   {
-    exercise: { type: String, required: true },
-    muscles: { type: [String], required: true },
+    name: { type: String, required: true },
+    bodyPart: { type: String, required: true },
+    target: { type: String, required: true },
+    equipment: { type: String, required: true },
+    gifUrl: { type: String, required: true },
   },
   { timestamps: true }
 );

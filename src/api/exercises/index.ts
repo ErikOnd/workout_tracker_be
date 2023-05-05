@@ -4,10 +4,20 @@ import ExerciseModel from "./model";
 const exerciseRouter = express.Router();
 import createHttpError from "http-errors";
 
+exerciseRouter.get("/all", JWTAuthMiddleware, async (req, res, next) => {
+  try {
+    const exercises = await ExerciseModel.find({}, { name: 1, _id: 0 });
+    const exerciseNames = exercises.map((exercise) => exercise.name);
+    res.send(exerciseNames);
+  } catch (error) {
+    next(error);
+  }
+});
+
 exerciseRouter.get("/:exercise", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const exercise = await ExerciseModel.findOne({
-      exercise: req.params.exercise,
+      name: req.params.exercise,
     });
     if (exercise) {
       console.log(exercise);
