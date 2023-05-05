@@ -35,6 +35,48 @@ workoutRouter.get(
   }
 );
 
+workoutRouter.get("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
+  try {
+    const workout = await ExerciseModel.findById(req.params.workoutId).populate(
+      "exercises.exercise_id"
+    );
+    if (!workout) {
+      return res.send(
+        createHttpError(
+          404,
+          `Workout with id: ${req.params.workoutId} not found`
+        )
+      );
+    }
+    res.json(workout);
+  } catch (error) {
+    next(error);
+  }
+});
+
+workoutRouter.put("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
+  try {
+    const updatedWorkout = await ExerciseModel.findByIdAndUpdate(
+      req.params.workoutId,
+      req.body,
+      { new: true }
+    );
+
+    if (!updatedWorkout) {
+      return res.send(
+        createHttpError(
+          404,
+          `Workout with id: ${req.params.workoutId} not found`
+        )
+      );
+    } else {
+      res.send(200);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 workoutRouter.delete(
   "/:workoutId",
   JWTAuthMiddleware,
