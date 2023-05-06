@@ -14,20 +14,19 @@ workoutRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
 
     await Promise.all(
       savedExercise.exercises.map(async (exercise) => {
-        if (exercise.set.length > 0) {
-          let weightAdded = 0;
+        if (exercise.sets.length > 0) {
+          let weightAdded: number[] = [];
 
           exercise.sets.map((set) => {
             const calcAmount = set.weight_lifted * (1 + set.repetitions / 30);
-            weightAdded += calcAmount;
+            weightAdded.push(calcAmount);
           });
 
-          const avgOneRapMax = weightAdded / exercise.sets.length;
-
+          const oneRapMax = Math.max(...weightAdded).toFixed(2);
           const newProgress = new ProgressModel({
             user_id: savedExercise.user_id,
             exercise_id: exercise.exercise_id,
-            weight_lifted: avgOneRapMax,
+            weight_lifted: oneRapMax,
           });
           await newProgress.save();
         }

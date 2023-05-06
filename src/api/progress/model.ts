@@ -6,7 +6,12 @@ const ProgressSchema = new Schema(
     exercise_id: { type: Schema.Types.ObjectId, required: true },
     weight_lifted: { type: Number, required: true },
   },
-  { timestamps: true }
+  {
+    timestamps: {
+      createdAt: true,
+      updatedAt: false,
+    },
+  }
 );
 
 export default model("Progress", ProgressSchema);
