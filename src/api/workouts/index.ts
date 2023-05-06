@@ -3,20 +3,44 @@ import createHttpError from "http-errors";
 import ExerciseModel from "./model";
 import { JWTAuthMiddleware, UserRequest } from "../../lib/auth/jwt";
 import express from "express";
+import ProgressModel from "../progress/model";
 
 const workoutRouter = express.Router();
 
 workoutRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    console.log(req.body);
     const newExercise = new ExerciseModel(req.body);
     const savedExercise = await newExercise.save();
+
+    await Promise.all(
+      savedExercise.exercises.map(async (exercise) => {
+        if (exercise.set.length > 0) {
+          let weightAdded = 0;
+
+          exercise.sets.map((set) => {
+            const calcAmount = set.weight_lifted * (1 + set.repetitions / 30);
+            weightAdded += calcAmount;
+          });
+
+          const avgOneRapMax = weightAdded / exercise.sets.length;
+
+          const newProgress = new ProgressModel({
+            user_id: savedExercise.user_id,
+            exercise_id: exercise.exercise_id,
+            weight_lifted: avgOneRapMax,
+          });
+          await newProgress.save();
+        }
+      })
+    );
+
     res.status(201).json(savedExercise);
   } catch (error) {
     next(error);
   }
 });
 
+export default workoutRouter;
 workoutRouter.get(
   "/me",
   JWTAuthMiddleware,
@@ -99,5 +123,3 @@ workoutRouter.delete(
     }
   }
 );
-
-export default workoutRouter;

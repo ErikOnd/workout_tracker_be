@@ -4,7 +4,7 @@ const ExercisesSchema = new Schema({
   exercise_id: { type: Schema.Types.ObjectId, ref: "Exercise", required: true },
   sets: [
     {
-      set_id: { type: Schema.Types.ObjectId, required: true },
+      //   set_id: { type: Schema.Types.ObjectId, required: true },
       repetitions: { type: Number, required: true },
       weight_lifted: { type: Number, required: true },
     },
