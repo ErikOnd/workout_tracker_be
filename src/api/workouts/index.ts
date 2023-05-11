@@ -14,21 +14,23 @@ workoutRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
 
     await Promise.all(
       savedExercise.exercises.map(async (exercise) => {
-        if (exercise.sets.length > 0) {
-          let weightAdded: number[] = [];
+        if (exercise.trackExercise) {
+          if (exercise.sets.length > 0) {
+            let weightAdded: number[] = [];
 
-          exercise.sets.map((set) => {
-            const calcAmount = set.weight_lifted * (1 + set.repetitions / 30);
-            weightAdded.push(calcAmount);
-          });
+            exercise.sets.map((set) => {
+              const calcAmount = set.weight_lifted * (1 + set.repetitions / 30);
+              weightAdded.push(calcAmount);
+            });
 
-          const oneRapMax = Math.max(...weightAdded).toFixed(2);
-          const newProgress = new ProgressModel({
-            user_id: savedExercise.user_id,
-            exercise_id: exercise._id,
-            weight_lifted: oneRapMax,
-          });
-          await newProgress.save();
+            const oneRapMax = Math.max(...weightAdded).toFixed(2);
+            const newProgress = new ProgressModel({
+              user_id: savedExercise.user_id,
+              exercise_id: exercise.exerciesId,
+              weight_lifted: oneRapMax,
+            });
+            await newProgress.save();
+          }
         }
       })
     );
@@ -90,9 +92,31 @@ workoutRouter.put("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
           `Workout with id: ${req.params.workoutId} not found`
         )
       );
-    } else {
-      res.send(200);
     }
+    await Promise.all(
+      updatedWorkout.exercises.map(async (exercise) => {
+        if (exercise.trackExercise) {
+          if (exercise.sets.length > 0) {
+            let weightAdded: number[] = [];
+
+            exercise.sets.map((set) => {
+              const calcAmount = set.weight_lifted * (1 + set.repetitions / 30);
+              weightAdded.push(calcAmount);
+            });
+
+            const oneRapMax = Math.max(...weightAdded).toFixed(2);
+            const newProgress = new ProgressModel({
+              user_id: updatedWorkout.user_id,
+              exercise_id: exercise.exerciesId,
+              weight_lifted: oneRapMax,
+            });
+            await newProgress.save();
+          }
+        }
+      })
+    );
+
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }
