@@ -4,6 +4,8 @@ const ExercisesSchema = new Schema({
   gifUrl: { type: String, required: true },
   name: { type: String, required: true },
   target: { type: String, required: true },
+  trackExercise: { type: Boolean, required: false, default: false },
+  exerciesId: { type: Schema.Types.ObjectId, required: true },
   sets: [
     {
       //   set_id: { type: Schema.Types.ObjectId, required: true },
