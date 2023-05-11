@@ -25,7 +25,7 @@ workoutRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
           const oneRapMax = Math.max(...weightAdded).toFixed(2);
           const newProgress = new ProgressModel({
             user_id: savedExercise.user_id,
-            exercise_id: exercise.exercise_id,
+            exercise_id: exercise._id,
             weight_lifted: oneRapMax,
           });
           await newProgress.save();
@@ -50,7 +50,7 @@ workoutRouter.get(
       }
       const workouts = await ExerciseModel.find({
         user_id: req.user._id,
-      }).populate("exercises.exercise_id");
+      });
       res.json(workouts);
     } catch (error) {
       next(error);
@@ -60,9 +60,7 @@ workoutRouter.get(
 
 workoutRouter.get("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const workout = await ExerciseModel.findById(req.params.workoutId).populate(
-      "exercises.exercise_id"
-    );
+    const workout = await ExerciseModel.findById(req.params.workoutId);
     if (!workout) {
       return res.send(
         createHttpError(

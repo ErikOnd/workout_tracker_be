@@ -1,12 +1,15 @@
 import { Schema, model } from "mongoose";
 
 const ExercisesSchema = new Schema({
-  exercise_id: { type: Schema.Types.ObjectId, ref: "Exercise", required: true },
+  gifUrl: { type: String, required: true },
+  name: { type: String, required: true },
+  target: { type: String, required: true },
   sets: [
     {
       //   set_id: { type: Schema.Types.ObjectId, required: true },
       repetitions: { type: Number, required: true },
       weight_lifted: { type: Number, required: true },
+      _id: { type: String, required: true },
     },
   ],
 });
