@@ -8,6 +8,7 @@ import workoutRouter from "./api/workouts";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
 import listEndpoints from "express-list-endpoints";
+import progressRouter from "./api/progress";
 
 import {
   badRequestHandler,
@@ -46,6 +47,7 @@ server.use(passport.initialize());
 server.use("/users", userRouter);
 server.use("/exercises", exerciseRouter);
 server.use("/workouts", workoutRouter);
+server.use("/progress", progressRouter);
 
 // ************************* ERROR HANDLERS ************************
 server.use(badRequestHandler);

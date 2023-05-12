@@ -41,7 +41,6 @@ workoutRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
   }
 });
 
-export default workoutRouter;
 workoutRouter.get(
   "/me",
   JWTAuthMiddleware,
@@ -144,3 +143,5 @@ workoutRouter.delete(
     }
   }
 );
+
+export default workoutRouter;
