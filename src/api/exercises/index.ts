@@ -6,9 +6,8 @@ import createHttpError from "http-errors";
 
 exerciseRouter.get("/all", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const exercises = await ExerciseModel.find({}, { name: 1, _id: 0 });
-    const exerciseNames = exercises.map((exercise) => exercise.name);
-    res.send(exerciseNames);
+    const exercises = await ExerciseModel.find();
+    res.send(exercises);
   } catch (error) {
     next(error);
   }
