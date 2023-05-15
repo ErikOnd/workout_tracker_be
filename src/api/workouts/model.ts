@@ -18,10 +18,11 @@ const ExercisesSchema = new Schema({
 
 const WorkoutSchema = new Schema(
   {
-    user_id: { type: Schema.Types.ObjectId, required: true },
+    user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
     workout_name: { type: String, required: true },
     focus: { type: String, required: false },
-    likes: { type: Number, required: false },
+    likes: { type: [Schema.Types.ObjectId], required: false, default: [] },
+    public: { type: Boolean, required: false, default: false },
     exercises: [ExercisesSchema],
   },
   { timestamps: true }

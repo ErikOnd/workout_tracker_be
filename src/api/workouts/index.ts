@@ -1,6 +1,6 @@
 import { RequestHandler, Request } from "express";
 import createHttpError from "http-errors";
-import ExerciseModel from "./model";
+import WorkoutModel from "./model";
 import { JWTAuthMiddleware, UserRequest } from "../../lib/auth/jwt";
 import express from "express";
 import ProgressModel from "../progress/model";
@@ -9,7 +9,7 @@ const workoutRouter = express.Router();
 
 workoutRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const newExercise = new ExerciseModel(req.body);
+    const newExercise = new WorkoutModel(req.body);
     const savedExercise = await newExercise.save();
 
     await Promise.all(
@@ -49,7 +49,7 @@ workoutRouter.get(
       if (!req.user) {
         return res.status(401).json({ error: "Unauthorized" });
       }
-      const workouts = await ExerciseModel.find({
+      const workouts = await WorkoutModel.find({
         user_id: req.user._id,
       });
       res.json(workouts);
@@ -59,9 +59,23 @@ workoutRouter.get(
   }
 );
 
+workoutRouter.get("/public", async (req, res, next) => {
+  try {
+    console.log("getting public workouts");
+
+    const publicWorkouts = await WorkoutModel.find({ public: true }).populate(
+      "user_id",
+      "username"
+    );
+    res.json(publicWorkouts);
+  } catch (error) {
+    next(error);
+  }
+});
+
 workoutRouter.get("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const workout = await ExerciseModel.findById(req.params.workoutId);
+    const workout = await WorkoutModel.findById(req.params.workoutId);
     if (!workout) {
       return res.send(
         createHttpError(
@@ -78,7 +92,7 @@ workoutRouter.get("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
 
 workoutRouter.put("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const updatedWorkout = await ExerciseModel.findByIdAndUpdate(
+    const updatedWorkout = await WorkoutModel.findByIdAndUpdate(
       req.params.workoutId,
       req.body,
       { new: true }
@@ -126,7 +140,7 @@ workoutRouter.delete(
   JWTAuthMiddleware,
   async (req, res, next) => {
     try {
-      const workoutToDelete = await ExerciseModel.findByIdAndDelete(
+      const workoutToDelete = await WorkoutModel.findByIdAndDelete(
         req.params.workoutId
       );
 
@@ -138,6 +152,37 @@ workoutRouter.delete(
           )
         );
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+workoutRouter.put(
+  "/visibility/:workoutId",
+  JWTAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      const workout = await WorkoutModel.findById(req.params.workoutId);
+
+      if (!workout) {
+        return res.send(
+          createHttpError(
+            404,
+            `Workout with id: ${req.params.workoutId} not found`
+          )
+        );
+      }
+
+      workout.public = !workout.public; // Toggle the value of the "public" field
+
+      const updatedWorkout = await WorkoutModel.findByIdAndUpdate(
+        req.params.workoutId,
+        { $set: { public: workout.public } },
+        { new: true }
+      );
+
+      res.json(updatedWorkout);
     } catch (error) {
       next(error);
     }
