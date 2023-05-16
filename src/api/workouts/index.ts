@@ -213,4 +213,43 @@ workoutRouter.put(
   }
 );
 
+workoutRouter.put(
+  "/like/:workoutId",
+  JWTAuthMiddleware,
+  async (req: UserRequest, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const workout = await WorkoutModel.findById(req.params.workoutId);
+
+      if (!workout) {
+        return res.send(
+          createHttpError(
+            404,
+            `Workout with id: ${req.params.workoutId} not found`
+          )
+        );
+      }
+
+      const userId = req.user._id;
+
+      if (workout.likes && userId) {
+        const likedIndex = workout.likes.indexOf(userId);
+        if (likedIndex === -1) {
+          workout.likes.push(userId);
+        } else {
+          workout.likes.splice(likedIndex, 1);
+        }
+      }
+
+      const updatedWorkout = await workout.save();
+      res.json(updatedWorkout);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default workoutRouter;

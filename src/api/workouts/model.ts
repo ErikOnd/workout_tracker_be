@@ -21,7 +21,7 @@ const WorkoutSchema = new Schema(
     user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
     workout_name: { type: String, required: true },
     focus: { type: String, required: false },
-    likes: { type: [Schema.Types.ObjectId], required: false, default: [] },
+    likes: { type: [String], required: false, default: [] },
     public: { type: Boolean, required: false, default: false },
     exercises: [ExercisesSchema],
   },
