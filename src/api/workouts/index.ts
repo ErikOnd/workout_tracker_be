@@ -7,39 +7,63 @@ import ProgressModel from "../progress/model";
 
 const workoutRouter = express.Router();
 
-workoutRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
-  try {
-    const newExercise = new WorkoutModel(req.body);
-    const savedExercise = await newExercise.save();
+workoutRouter.post(
+  "/",
+  JWTAuthMiddleware,
+  async (req: UserRequest, res, next) => {
+    console.log("i am here");
+    try {
+      const workoutData = req.body;
 
-    await Promise.all(
-      savedExercise.exercises.map(async (exercise) => {
-        if (exercise.trackExercise) {
-          if (exercise.sets.length > 0) {
-            let weightAdded: number[] = [];
+      if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
 
-            exercise.sets.map((set) => {
-              const calcAmount = set.weight_lifted * (1 + set.repetitions / 30);
-              weightAdded.push(calcAmount);
-            });
+      if (!workoutData.user_id) {
+        workoutData.user_id = req.user._id;
+      }
 
-            const oneRapMax = Math.max(...weightAdded).toFixed(2);
-            const newProgress = new ProgressModel({
-              user_id: savedExercise.user_id,
-              exercise_id: exercise.exerciesId,
-              weight_lifted: oneRapMax,
-            });
-            await newProgress.save();
+      if (workoutData._id) {
+        delete workoutData._id;
+        delete workoutData.createdAt;
+        delete workoutData.updatedAt;
+        workoutData.user_id = req.user._id;
+        workoutData.public = false;
+      }
+
+      const newExercise = new WorkoutModel(workoutData);
+      const savedExercise = await newExercise.save();
+
+      await Promise.all(
+        savedExercise.exercises.map(async (exercise) => {
+          if (exercise.trackExercise) {
+            if (exercise.sets.length > 0) {
+              let weightAdded: number[] = [];
+
+              exercise.sets.map((set) => {
+                const calcAmount =
+                  set.weight_lifted * (1 + set.repetitions / 30);
+                weightAdded.push(calcAmount);
+              });
+
+              const oneRapMax = Math.max(...weightAdded).toFixed(2);
+              const newProgress = new ProgressModel({
+                user_id: savedExercise.user_id,
+                exercise_id: exercise.exerciesId,
+                weight_lifted: oneRapMax,
+              });
+              await newProgress.save();
+            }
           }
-        }
-      })
-    );
+        })
+      );
 
-    res.status(201).json(savedExercise);
-  } catch (error) {
-    next(error);
+      res.status(201).json(savedExercise);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 workoutRouter.get(
   "/me",
