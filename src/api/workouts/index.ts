@@ -85,15 +85,10 @@ workoutRouter.get(
 
 workoutRouter.get("/public", async (req, res, next) => {
   try {
-    console.log("just public");
-
-    const matchCriteria: {
-      public: boolean;
-      name?: { $regex: RegExp };
-    } = { public: true };
+    console.log("Getting public workouts");
 
     const publicWorkouts = await WorkoutModel.aggregate([
-      { $match: matchCriteria },
+      { $match: { public: true } },
       {
         $lookup: {
           from: "users",
@@ -108,7 +103,12 @@ workoutRouter.get("/public", async (req, res, next) => {
       { $limit: 10 },
     ]);
 
-    res.json(publicWorkouts);
+    const populatedWorkouts = await WorkoutModel.populate(publicWorkouts, {
+      path: "user_id",
+      select: "username",
+    });
+
+    res.json(populatedWorkouts);
   } catch (error) {
     next(error);
   }
