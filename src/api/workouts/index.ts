@@ -114,8 +114,21 @@ workoutRouter.get("/public", async (req, res, next) => {
   }
 });
 
-workoutRouter.get("/public/:workoutName", async (req, res, next) => {
+workoutRouter.get("/public/:name", async (req, res, next) => {
   try {
+    console.log("Getting public workouts by name");
+
+    const { name } = req.params;
+
+    const publicWorkouts = await WorkoutModel.find({
+      public: true,
+      workout_name: { $regex: name, $options: "i" },
+    })
+      .sort({ likes: -1 })
+      .limit(10)
+      .populate("user_id", "username");
+
+    res.json(publicWorkouts);
   } catch (error) {
     next(error);
   }
