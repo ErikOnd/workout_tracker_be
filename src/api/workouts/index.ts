@@ -85,30 +85,37 @@ workoutRouter.get(
 
 workoutRouter.get("/public", async (req, res, next) => {
   try {
-    console.log("getting public workouts");
+    console.log("just public");
 
-    const publicWorkouts = await WorkoutModel.find({ public: true }).populate(
-      "user_id",
-      "username"
-    );
+    const matchCriteria: {
+      public: boolean;
+      name?: { $regex: RegExp };
+    } = { public: true };
+
+    const publicWorkouts = await WorkoutModel.aggregate([
+      { $match: matchCriteria },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $addFields: { likesCount: { $size: "$likes" } } },
+      { $sort: { likesCount: -1 } },
+      { $limit: 10 },
+    ]);
+
     res.json(publicWorkouts);
   } catch (error) {
     next(error);
   }
 });
 
-workoutRouter.get("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
+workoutRouter.get("/public/:workoutName", async (req, res, next) => {
   try {
-    const workout = await WorkoutModel.findById(req.params.workoutId);
-    if (!workout) {
-      return res.send(
-        createHttpError(
-          404,
-          `Workout with id: ${req.params.workoutId} not found`
-        )
-      );
-    }
-    res.json(workout);
   } catch (error) {
     next(error);
   }
