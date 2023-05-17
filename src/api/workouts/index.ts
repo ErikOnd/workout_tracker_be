@@ -98,6 +98,23 @@ workoutRouter.get("/public", async (req, res, next) => {
   }
 });
 
+workoutRouter.get("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
+  try {
+    const workout = await WorkoutModel.findById(req.params.workoutId);
+    if (!workout) {
+      return res.send(
+        createHttpError(
+          404,
+          `Workout with id: ${req.params.workoutId} not found`
+        )
+      );
+    }
+    res.json(workout);
+  } catch (error) {
+    next(error);
+  }
+});
+
 workoutRouter.get("/public/:name", async (req, res, next) => {
   try {
     console.log("Getting public workouts by name");
