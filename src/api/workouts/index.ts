@@ -98,6 +98,7 @@ workoutRouter.get("/public", async (req, res, next) => {
   }
 });
 
+//test
 workoutRouter.get("/:workoutId", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const workout = await WorkoutModel.findById(req.params.workoutId);
