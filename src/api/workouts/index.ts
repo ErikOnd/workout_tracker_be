@@ -85,30 +85,14 @@ workoutRouter.get(
 
 workoutRouter.get("/public", async (req, res, next) => {
   try {
-    console.log("Getting public workouts");
+    const publicWorkouts = await WorkoutModel.find({
+      public: true,
+    })
+      .sort({ likes: -1 })
+      .limit(10)
+      .populate("user_id", "username");
 
-    const publicWorkouts = await WorkoutModel.aggregate([
-      { $match: { public: true } },
-      {
-        $lookup: {
-          from: "users",
-          localField: "user_id",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      { $unwind: "$user" },
-      { $addFields: { likesCount: { $size: "$likes" } } },
-      { $sort: { likesCount: -1 } },
-      { $limit: 10 },
-    ]);
-
-    const populatedWorkouts = await WorkoutModel.populate(publicWorkouts, {
-      path: "user_id",
-      select: "username",
-    });
-
-    res.json(populatedWorkouts);
+    res.json(publicWorkouts);
   } catch (error) {
     next(error);
   }
@@ -125,7 +109,6 @@ workoutRouter.get("/public/:name", async (req, res, next) => {
       workout_name: { $regex: name, $options: "i" },
     })
       .sort({ likes: -1 })
-      .limit(10)
       .populate("user_id", "username");
 
     res.json(publicWorkouts);
