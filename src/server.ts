@@ -64,5 +64,6 @@ mongoose.connection.on("connected", () => {
   server.listen(port, () => {
     console.table(listEndpoints(server));
     console.log(`✅ Server is running on port ${port}`);
+    console.log(`whitelist: ${whitelist}`);
   });
 });
