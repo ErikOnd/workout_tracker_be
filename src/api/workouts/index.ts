@@ -83,6 +83,27 @@ workoutRouter.get(
   }
 );
 
+workoutRouter.get(
+  "/me/names",
+  JWTAuthMiddleware,
+  async (req: UserRequest, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      console.log("/me/names", req.user._id);
+
+      const workouts = await WorkoutModel.find({
+        user_id: req.user._id,
+      }).select("workout_name _id");
+      console.log(workouts);
+      res.json(workouts);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 workoutRouter.get("/public", async (req, res, next) => {
   try {
     const publicWorkouts = await WorkoutModel.find({
