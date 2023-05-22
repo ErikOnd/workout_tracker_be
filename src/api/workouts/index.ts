@@ -11,7 +11,6 @@ workoutRouter.post(
   "/",
   JWTAuthMiddleware,
   async (req: UserRequest, res, next) => {
-    console.log("i am here");
     try {
       const workoutData = req.body;
 
@@ -24,9 +23,12 @@ workoutRouter.post(
       }
 
       if (workoutData._id) {
+        //workout is not a new workout it's an imported one
+        //removeing likes etc.
         delete workoutData._id;
         delete workoutData.createdAt;
         delete workoutData.updatedAt;
+        workoutData.likes = [];
         workoutData.user_id = req.user._id;
         workoutData.public = false;
       }
