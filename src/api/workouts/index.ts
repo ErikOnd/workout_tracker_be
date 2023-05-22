@@ -106,6 +106,49 @@ workoutRouter.get(
   }
 );
 
+// Endpoint to get the number of workouts a user has
+workoutRouter.get(
+  "/me/count",
+  JWTAuthMiddleware,
+  async (req: UserRequest, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const count = await WorkoutModel.countDocuments({
+        user_id: req.user._id,
+      });
+      res.json({ count });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// Endpoint to count the total number of likes across all workouts of a user
+workoutRouter.get(
+  "/me/likes/count",
+  JWTAuthMiddleware,
+  async (req: UserRequest, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const workouts = await WorkoutModel.find({ user_id: req.user._id });
+      let totalLikes = 0;
+
+      workouts.forEach((workout) => {
+        if (workout.likes) {
+          totalLikes += workout.likes.length;
+        }
+      });
+      res.json({ totalLikes });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 workoutRouter.get("/public", async (req, res, next) => {
   try {
     const publicWorkouts = await WorkoutModel.find({
