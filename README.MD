@@ -20,4 +20,4 @@ This is a workout tracker app that allows users to create an account and track t
 
 Link to fronted repository: [https://github.com/ErikOnd/workout_tracker_fe](https://github.com/ErikOnd/workout_tracker_fe)
 
-Live preview: https://workout-tracker-fe.vercel.app/login
+Live preview: https://www.my-workout-tracker.com
