@@ -23,3 +23,5 @@ This is a workout tracker app that allows users to create an account and track t
 - **User Authentication:** JSON Web Tokens (JWT)
 
 Link to fronted repository: [https://github.com/ErikOnd/workout_tracker_fe](https://github.com/ErikOnd/workout_tracker_fe)
+
+Live preview: https://workout-tracker-fe.vercel.app/login
